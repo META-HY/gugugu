@@ -1,0 +1,1036 @@
+:root,
+:root[data-theme='light'] {
+  /* 液态玻璃（Liquid Glass）—— 亮色 */
+  --bg: #f5f5f7;
+  --bg-deep: #edeff2;
+  /* 玻璃卡片：半透明白，透出背后环境光的渐变 */
+  --card: rgba(255, 255, 255, 0.62);
+  --card-solid: rgba(255, 255, 255, 0.82);
+  --text: #1c2532;
+  --text-secondary: #5c6b7c;
+  /* 玻璃描边：高亮白 + 微弱投影，形成液态高光边 */
+  --border: rgba(255, 255, 255, 0.55);
+  --border-soft: rgba(28, 37, 50, 0.06);
+  --shadow: 0 1px 1px rgba(28, 37, 50, 0.03), 0 8px 24px rgba(28, 37, 50, 0.1);
+  --shadow-hover: 0 12px 32px rgba(28, 37, 50, 0.14), 0 2px 6px rgba(28, 37, 50, 0.04);
+  --header-bg: rgba(255, 255, 255, 0.62);
+  /* 顶部内高光（玻璃受光面） */
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.75);
+  --glass-blur: blur(22px) saturate(180%);
+  /* 液态玻璃细部：顶缘高光带 + 斜向环境光扫过 + 泛光描边 */
+  --glass-top-highlight: rgba(255, 255, 255, 0.55);
+  --glass-sheen: rgba(255, 255, 255, 0.60);
+  --border-bright: rgba(255, 255, 255, 0.9);
+  /* 控件级玻璃：输入框 / 按钮 / 下拉选择器的面 */
+  --card-input: rgba(255, 255, 255, 0.66);
+  /* 分段器（Segmented）轨道：比卡片更透，衬托浮起的滑块 */
+  --glass-track: rgba(255, 255, 255, 0.42);
+  /* 控件描边：受光白边 */
+  --border-input: rgba(255, 255, 255, 0.65);
+  --accent: #d01c1c;
+  --accent-soft: rgba(208, 28, 28, 0.12);
+  --up: #d01c1c;
+  --down: #06784f;
+  --flat: #5f6b76;
+}
+
+:root[data-theme='dark'] {
+  /* 液态玻璃 —— 暗色：更深的环境 + 更强调玻璃反光 */
+  --bg: #07080d;
+  --bg-deep: #0a0c13;
+  --card: rgba(19, 26, 38, 0.55);
+  --card-solid: rgba(20, 28, 41, 0.85);
+  --text: #ecf1f8;
+  --text-secondary: #9aa7b8;
+  --border: rgba(255, 255, 255, 0.14);
+  --border-soft: rgba(0, 0, 0, 0.3);
+  --shadow: 0 1px 1px rgba(0, 0, 0, 0.25), 0 12px 30px rgba(0, 0, 0, 0.5);
+  --shadow-hover: 0 16px 40px rgba(0, 0, 0, 0.62), 0 2px 8px rgba(0, 0, 0, 0.35);
+  --header-bg: rgba(14, 20, 30, 0.6);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  --glass-blur: blur(22px) saturate(160%);
+  --glass-top-highlight: rgba(255, 255, 255, 0.16);
+  --glass-sheen: rgba(255, 255, 255, 0.10);
+  --border-bright: rgba(255, 255, 255, 0.34);
+  --card-input: rgba(24, 32, 46, 0.62);
+  --glass-track: rgba(255, 255, 255, 0.09);
+  --border-input: rgba(255, 255, 255, 0.18);
+  --accent: #ff5c4d;
+  --accent-soft: rgba(255, 92, 77, 0.16);
+  --up: #ff5c4d;
+  --down: #1fc989;
+  --flat: #8b95a3;
+}
+
+/* ===== 环境光背景（液态玻璃需要背后有内容可模糊） =====
+   Apple 高级感的来源：
+   1. 光是「环境」而非「斑点」—— 渐变中心藏在画面外上方，天光均匀洒下，
+      看不到任何一个光斑的边界，只感觉空气里有色温。
+   2. 同色系 0 alpha 端点 —— 不用 transparent 关键字（它是 rgba(0,0,0,0)，
+      会向黑色插值产生脏色带），端点用同色 0 透明度，色相恒定、纯做淡出。
+   3. 色彩极度克制 —— 全局只有一道主天光 + 一缕对角辅光 + 地平线余晖，
+      均取自 Apple 系统色板（蓝 0071E3 / 紫 BF5AF2 / 橙 FF9500）。 */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    /* 主天光：Apple 蓝，从画面外上方中央倾泻（尺寸 160% 保证左右无衰减边界） */
+    radial-gradient(160% 120% at 50% -45%, rgba(0, 113, 227, 0.13), rgba(0, 113, 227, 0) 62%),
+    /* 对角辅光：右上角一缕薰衣草紫，似有若无 */
+    radial-gradient(90% 70% at 108% -12%, rgba(191, 90, 242, 0.08), rgba(191, 90, 242, 0) 58%),
+    /* 地平线余晖：底部微暖，中和纯冷调的塑料感 */
+    radial-gradient(150% 85% at 50% 140%, rgba(255, 149, 0, 0.06), rgba(255, 149, 0, 0) 62%),
+    /* 底色：Apple 官网同款画布 */
+    linear-gradient(180deg, #fbfbfd 0%, #f5f5f7 100%);
+}
+:root[data-theme='dark'] body::before {
+  background:
+    /* 主天光：深空蓝，比亮色更亮一档 —— 暗色里玻璃需要更明确的光源 */
+    radial-gradient(160% 120% at 50% -45%, rgba(10, 132, 255, 0.20), rgba(10, 132, 255, 0) 62%),
+    /* 对角辅光：紫外光 */
+    radial-gradient(90% 70% at 108% -12%, rgba(191, 90, 242, 0.13), rgba(191, 90, 242, 0) 58%),
+    /* 地平线余晖：远端的暖红 */
+    radial-gradient(150% 85% at 50% 140%, rgba(255, 69, 58, 0.09), rgba(255, 69, 58, 0) 62%),
+    /* 底色：近黑的深蓝，深邃但不死黑 */
+    linear-gradient(180deg, #05060a 0%, #0a0c13 100%);
+}
+
+/* 极细颗粒：消除大面积渐变的色带（banding），似有似无的材质质感 */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.024;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 240px 240px;
+}
+:root[data-theme='dark'] body::after {
+  opacity: 0.045;
+}
+
+/* 动效与交互令牌 */
+:root {
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 150ms;
+  --dur-base: 250ms;
+  --dur-slow: 420ms;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, 'PingFang SC',
+      'Microsoft YaHei', sans-serif;
+  font-optical-sizing: auto; /* 字形随字号变化（Apple 排版基线） */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: var(--bg); /* 实底兜底，即使渐变/伪元素不可用也不会变黑 */
+  color: var(--text);
+  transition: background-color var(--dur-base) var(--ease-out-quart),
+    color var(--dur-base) var(--ease-out-quart);
+}
+
+/* 液态玻璃表面基础（供组件 class 使用） */
+.glass {
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: var(--shadow), var(--glass-highlight);
+}
+.glass-tile {
+  position: relative;
+  overflow: hidden;
+  background: var(--card-solid);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight), var(--shadow);
+  transition: box-shadow var(--dur-base) var(--ease-out-quart),
+    border-color var(--dur-base) var(--ease-out-quart);
+}
+/* 玻璃顶缘受光带：上亮下暗，模拟弧面玻璃反射环境光 */
+.glass-tile::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(180deg, var(--glass-sheen), transparent 52%);
+  opacity: 0.55;
+  transition: opacity var(--dur-base) var(--ease-out-quart);
+}
+/* 玻璃底部内阴影：提示材质厚度，与上方高光形成纵深 */
+.glass-tile::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.06), transparent 18%);
+  opacity: 0;
+}
+@keyframes glass-hover-glow {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@media (hover: hover) {
+  .glass-tile:hover {
+    border-color: var(--border-bright);
+    box-shadow: inset 0 1px 0 var(--glass-top-highlight), var(--shadow-hover);
+  }
+  .glass-tile:hover::before {
+    animation: glass-hover-glow 240ms var(--ease-out-quart) both;
+    opacity: 0.9;
+  }
+  .glass-tile:hover::after {
+    animation: glass-hover-glow 240ms var(--ease-out-quart) both;
+    opacity: 1;
+  }
+}
+.glass-hover {
+  transition: transform var(--dur-base) var(--ease-out-quart),
+    box-shadow var(--dur-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .glass-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: inset 0 1px 0 var(--glass-top-highlight), var(--shadow-hover);
+  }
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(16px, 2.5vw, 24px) clamp(14px, 2.5vw, 24px) clamp(40px, 6vw, 56px);
+}
+
+/* 大屏下正文更舒展，小屏下更紧凑 */
+body {
+  font-size: 15px;
+}
+@media (max-width: 575px) {
+  body {
+    font-size: 14px;
+  }
+}
+
+.privacy-mask {
+  letter-spacing: 0.12em;
+}
+
+/* 顶部粘性布局中的液态玻璃 */
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--border-soft);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4), 0 6px 24px rgba(28, 37, 50, 0.06);
+}
+
+.header-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 10px clamp(14px, 2.5vw, 24px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.header-brand-name {
+  font-weight: 700;
+  font-size: 17px;
+  white-space: nowrap;
+}
+
+/* 右侧更新时间在小屏隐藏，保留核心入口 */
+.header-updated-at {
+  display: inline-flex;
+  align-items: center;
+}
+
+@media (max-width: 575px) {
+  .header-updated-at {
+    display: none;
+  }
+  .header-brand-name {
+    font-size: 16px;
+  }
+  /* 设置按钮只留图标，触摸目标不缩 */
+  .header-settings-label {
+    display: none;
+  }
+  .header-inner {
+    gap: 8px;
+    padding: 8px 12px;
+  }
+  .header-brand {
+    gap: 8px;
+  }
+}
+/* 平板竖屏：更新时间压缩为一行小字 */
+@media (min-width: 576px) and (max-width: 767px) {
+  .header-inner {
+    gap: 8px;
+  }
+}
+
+/* 卡片通用阴影 */
+.soft-card {
+  box-shadow: var(--shadow);
+}
+
+/* ===== antd 表面液态玻璃 ===== */
+
+/* 卡片：半透明面 + 顶缘受光 + 柔和投影，背景色由 Card token 提供（var(--card)） */
+.ant-card {
+  position: relative;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-top-highlight);
+  border-radius: 18px;
+}
+/* 卡片顶部环境光扫过（很淡，不干扰内容可读性） */
+.ant-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--glass-sheen), transparent 30%);
+  opacity: 0.4;
+}
+.ant-card-head {
+  position: relative;
+  background: transparent;
+  border-bottom: 1px solid var(--border-soft);
+}
+.ant-card-body {
+  position: relative;
+  background: transparent;
+}
+
+/* 独立玻璃面板（桌面自选表格等直接落地的容器） */
+.glass-panel {
+  position: relative;
+  background: var(--card);
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-top-highlight);
+  padding: 6px 8px;
+}
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, var(--glass-sheen), transparent 26%);
+  opacity: 0.35;
+}
+
+/* 自选汇总栏 */
+.summary-bar {
+  margin-bottom: 14px;
+  padding: 14px 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  align-items: center;
+}
+.summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.summary-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.summary-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.1;
+  /* Apple 排版：大号粗数字微收字距 + 等宽数字列对齐 */
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+/* 大标题负字距：字号越大字距应收得越紧（WWDC 排版规范） */
+h1.ant-typography,
+h2.ant-typography,
+h3.ant-typography,
+h4.ant-typography,
+h5.ant-typography {
+  letter-spacing: -0.015em;
+}
+.summary-hint {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin-left: 6px;
+}
+/* 收益走势：汇总栏右侧展开按钮 + 展开后的全宽图区 */
+.summary-trend-toggle {
+  margin-left: auto;
+  color: var(--text-secondary);
+}
+.summary-trend {
+  flex-basis: 100%;
+  min-width: 0;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border);
+}
+/* 基金切换 Segmented：窄视口下多只长基金名不再溢出面板，横向滚动切换 */
+.summary-trend .ant-segmented {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+.summary-trend .ant-segmented::-webkit-scrollbar {
+  height: 4px;
+}
+.summary-trend .ant-segmented::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 2px;
+}
+@media (max-width: 640px) {
+  .summary-bar {
+    gap: 14px;
+    padding: 12px 16px;
+  }
+  .summary-value {
+    font-size: 17px;
+  }
+  .summary-hint {
+    display: block;
+    margin-left: 0;
+  }
+}
+
+/* 输入类控件：玻璃面 + 受光白边（背景/描边色由 token 提供） */
+.ant-input-affix-wrapper,
+.ant-input-outlined,
+.ant-select-selector,
+.ant-btn-default,
+.ant-btn-variant-outlined {
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight);
+}
+.ant-input-affix-wrapper:focus-within,
+.ant-input-outlined:focus-within {
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight), 0 0 0 2px var(--accent-soft);
+}
+
+/* 分段器：玻璃轨道 + 浮起滑块（Apple segmented control 手感） */
+.ant-segmented {
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+}
+.ant-segmented .ant-segmented-thumb {
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14), 0 0 0 1px var(--border),
+    inset 0 1px 0 var(--glass-top-highlight);
+}
+
+/* 页签（editable-card）：Apple 分段器式玻璃芯片 */
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-list {
+  gap: 6px;
+}
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab {
+  background: var(--card) !important;
+  border: 1px solid var(--border-input) !important;
+  border-radius: 999px !important;
+  padding: 4px 14px !important;
+  margin: 0 !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight);
+  transition: background-color var(--dur-base) var(--ease-out-quart),
+    border-color var(--dur-base) var(--ease-out-quart),
+    box-shadow var(--dur-base) var(--ease-out-quart),
+    transform var(--dur-fast) var(--ease-out-quart);
+}
+/* 芯片按下即时微缩，松手弹回 */
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab:active {
+  transform: scale(0.97);
+}
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab:hover {
+  border-color: var(--border-bright) !important;
+}
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab-active {
+  background: var(--card-solid) !important;
+  border-color: var(--border-bright) !important;
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-top-highlight);
+}
+/* 芯片内文字与关闭按钮居中对齐 */
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab-btn {
+  font-size: 13px;
+  line-height: 22px;
+}
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-remove {
+  margin-left: 2px;
+  margin-inline-start: 2px;
+  padding: 0 2px;
+  font-size: 10px;
+  opacity: 0.55;
+  transition: opacity var(--dur-fast) var(--ease-out-quart);
+}
+.ant-tabs.ant-tabs-card.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-tab .ant-tabs-tab-remove:hover {
+  opacity: 1;
+}
+/* 激活态改由玻璃芯片表达，隐藏红色墨条 */
+.ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-ink-bar {
+  display: none;
+}
+/* 芯片外投影不被 nav-wrap 裁切：clip + 外扩边距（保留横向滚动裁切，投影有绘制空间） */
+.ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-wrap {
+  overflow: clip;
+  overflow-clip-margin: 20px;
+}
+/* 不支持 overflow-clip-margin 的浏览器（如 Firefox）：直接放开，不裁投影 */
+@supports not (overflow-clip-margin: 1px) {
+  .ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-wrap {
+    overflow: visible;
+  }
+}
+/* 添加按钮：圆形玻璃芯片，与页签同高 */
+.ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-add {
+  width: 30px !important;
+  height: 30px !important;
+  min-width: 30px;
+  margin-left: 4px;
+  background: var(--card) !important;
+  border: 1px solid var(--border-input) !important;
+  border-radius: 999px !important;
+  -webkit-backdrop-filter: blur(12px) saturate(160%);
+  backdrop-filter: blur(12px) saturate(160%);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight);
+  transition: border-color var(--dur-base) var(--ease-out-quart),
+    background-color var(--dur-base) var(--ease-out-quart),
+    transform var(--dur-base) var(--ease-out-quart);
+}
+.ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-add:hover {
+  border-color: var(--border-bright) !important;
+  background: var(--card-solid) !important;
+}
+.ant-tabs.ant-tabs-editable-card > .ant-tabs-nav .ant-tabs-nav-add:active {
+  transform: scale(0.94);
+}
+/* 分组分段器：去掉 antd 默认的 nav 底部分隔线（激活态由玻璃芯片明暗表达） */
+.ant-tabs.ant-tabs-top.ant-tabs-editable-card > .ant-tabs-nav::before {
+  content: none !important;
+  border-bottom: none !important;
+}
+
+/* 表格（嵌在卡片/面板内保持透明，由外层玻璃供底） */
+.ant-table-wrapper,
+.ant-table,
+div.ant-table-wrapper,
+div.ant-table {
+  background: transparent;
+  border-radius: 14px;
+  overflow: hidden;
+}
+.ant-table-thead > tr > th {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border-soft) !important;
+}
+.ant-table-tbody > tr > td {
+  background: transparent !important;
+}
+.ant-table-tbody > tr:hover > td {
+  background: color-mix(in srgb, var(--card-solid) 55%, transparent) !important;
+}
+
+/* 默认标签：玻璃小芯片（带语义色的标签保留原色） */
+.ant-tag:not(.ant-tag-has-color) {
+  background: var(--card-input);
+  -webkit-backdrop-filter: blur(8px) saturate(140%);
+  backdrop-filter: blur(8px) saturate(140%);
+  border-color: var(--border-input);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight);
+}
+
+/* 重仓行业标签：主色淡染的玻璃芯片，与基金类型标签区分 */
+.industry-tag.ant-tag {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-color: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+
+/* 下拉 / 浮层 / 弹窗 —— 玻璃托盘 */
+.ant-select-dropdown,
+.ant-dropdown-menu,
+.ant-popover-inner,
+.ant-modal-content {
+  background: var(--card-solid) !important;
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-hover), var(--glass-highlight);
+}
+.ant-select-item-option-active {
+  background: color-mix(in srgb, var(--card-solid) 60%, transparent) !important;
+}
+
+/* 提示横幅：玻璃托盘 + 语义色由 Alert token 半透明化 */
+.ant-alert {
+  -webkit-backdrop-filter: blur(14px) saturate(150%);
+  backdrop-filter: blur(14px) saturate(150%);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow), inset 0 1px 0 var(--glass-top-highlight);
+}
+
+/* 页脚：玻璃横条 */
+.app-footer {
+  -webkit-backdrop-filter: var(--glass-blur);
+  backdrop-filter: var(--glass-blur);
+  background: var(--header-bg);
+  border-top: 1px solid var(--border-soft);
+  box-shadow: inset 0 1px 0 var(--glass-top-highlight);
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 14px 20px;
+  text-align: center;
+}
+@media (max-width: 575px) {
+  .app-footer {
+    padding: 12px 14px;
+  }
+}
+
+/* ===== 多端自适应 ===== */
+
+/* 指数板：横向滚动轨道，窄屏收紧 */
+.index-board {
+  display: flex;
+  gap: 12px;
+  overflow-x: auto;
+  /* 滚动容器会裁剪 padding 边缘外的内容：
+     上下对称留白让卡片在轨道内垂直居中，同时给外阴影（常态 24px 模糊 / hover 40px）
+     留足显示空间；左右同样留出，避免首尾卡片投影贴边被切；负 margin 抵消额外 padding 保持对齐 */
+  padding: 17px 10px;
+  margin: 0 -10px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.index-board::-webkit-scrollbar {
+  display: none;
+}
+/* 桌面端拖拽平移：抓手光标 + 拖拽中禁用子元素 hover 抬升和文字选中 */
+.index-board {
+  cursor: grab;
+  user-select: none;
+}
+.index-board.dragging {
+  cursor: grabbing;
+}
+.index-board.dragging .index-tile {
+  pointer-events: none;
+}
+.index-tile {
+  flex: 0 0 auto;
+  min-width: 168px;
+}
+/* 可点卡片：按下瞬间即时微缩（Apple 触觉响应），松手由 glass-hover 的 transform 过渡弹回 */
+.index-tile:active {
+  transform: scale(0.97);
+}
+/* 轨道边缘渐隐：内容延续处柔和淡出代替生硬裁切（App Store 卡片轨道手法）；
+   滚到头的一侧不再渐隐，暗示「这边没有了」（has-overflow/at-start/at-end 由 JS 按滚动位置切换） */
+.index-board.has-overflow {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 calc(100% - 22px), transparent 100%);
+}
+.index-board.has-overflow.at-start {
+  -webkit-mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 22px), transparent 100%);
+  mask-image: linear-gradient(90deg, #000 0, #000 calc(100% - 22px), transparent 100%);
+}
+.index-board.has-overflow.at-end {
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 100%);
+  mask-image: linear-gradient(90deg, transparent 0, #000 22px, #000 100%);
+}
+@media (max-width: 575px) {
+  .index-board {
+    gap: 10px;
+  }
+  .index-tile {
+    min-width: 150px;
+  }
+}
+
+/* 详情页头部：宽屏名称左/估值右，窄屏上下堆叠 */
+.fund-head {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.fund-head-quote {
+  margin-left: auto;
+  text-align: right;
+}
+@media (max-width: 575px) {
+  .fund-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .fund-head-quote {
+    margin-left: 0;
+    text-align: left;
+  }
+}
+
+/* 卡片头：窄屏允许标题与 extra（周期分段器等）换行，不溢出 */
+.ant-card-head {
+  flex-wrap: wrap;
+  row-gap: 8px;
+  padding-inline: clamp(12px, 2.5vw, 24px);
+}
+.ant-card-extra {
+  padding-inline: 0;
+}
+@media (max-width: 575px) {
+  .ant-card-head-title {
+    font-size: 14px;
+  }
+  /* 周期分段器占满整行，选项自动分摊 */
+  .ant-card-extra .ant-segmented {
+    max-width: 100%;
+  }
+  .ant-segmented .ant-segmented-item-label {
+    padding-inline: 8px;
+    font-size: 12px;
+  }
+}
+
+/* 设置页行：窄屏控件换行铺满 */
+.settings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+@media (max-width: 575px) {
+  .settings-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .settings-row > .ant-select,
+  .settings-row > .ant-segmented,
+  .settings-row > .ant-space {
+    width: 100%;
+  }
+  .settings-row .ant-space {
+    display: flex;
+  }
+  .settings-row .ant-space .ant-space-item {
+    flex: 1;
+  }
+  .settings-row .ant-space .ant-btn {
+    width: 100%;
+  }
+}
+
+/* 超小屏（<=360px）：全局再收紧一档 */
+@media (max-width: 360px) {
+  .app-content {
+    padding-inline: 10px;
+  }
+  .index-tile {
+    min-width: 138px;
+  }
+}
+
+/* 大屏（>=1600px）：内容区放宽，密度不变 */
+@media (min-width: 1600px) {
+  .app-content,
+  .header-inner {
+    max-width: 1280px;
+  }
+}
+
+/* 数值强调 */
+.value-up {
+  color: var(--up);
+}
+.value-down {
+  color: var(--down);
+}
+.value-flat {
+  color: var(--flat);
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(127, 127, 127, 0.35);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(127, 127, 127, 0.55);
+}
+
+/* ===== 动效与交互 ===== */
+
+/* ===== 入场编排（液态玻璃）=====
+   Apple 式级联：环境光先醒 → 顶栏玻璃垂落凝聚 → 分区依次浮升 → 页脚落定。
+   玻璃面（卡片 / 指数瓷砖）以「模糊从无到有」的材质凝聚登场，而非单纯淡入。
+   关键帧一律省略 to 帧：收敛到元素自身样式，主题切换与减少透明偏好下自动正确。
+   纯 CSS 实现，脚本失败也会收敛到可见态。 */
+
+/* 环境光黎明：天光渐亮（玻璃需要可折射的环境），颗粒随光而来 */
+@keyframes ambient-dawn {
+  from {
+    opacity: 0;
+  }
+}
+body::before {
+  animation: ambient-dawn 1s var(--ease-out-quart) both;
+}
+body::after {
+  animation: ambient-dawn 1.2s var(--ease-out-quart) both;
+}
+
+/* 顶栏：自上垂落，玻璃同步凝聚（blur 0 → 玻璃态） */
+@keyframes header-drop {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: blur(0px) saturate(100%);
+  }
+}
+.sticky-header {
+  animation: header-drop var(--dur-slow) var(--ease-out-expo) both;
+}
+
+/* 玻璃材质凝聚：上浮 + 微放大 + 模糊收敛成形（液态玻璃标志性入场） */
+@keyframes glass-materialize {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+    -webkit-backdrop-filter: blur(0px) saturate(100%);
+    backdrop-filter: blur(0px) saturate(100%);
+  }
+}
+
+/* 通用浮升：只动合成器友好的 transform / opacity，任意子元素安全 */
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.99);
+  }
+}
+.on-enter {
+  animation: enter-up var(--dur-slow) var(--ease-out-expo) both;
+}
+
+/* 交错入场：--i 由 JS 按序号注入（列表卡片）；直接子项中的玻璃卡改为材质凝聚 */
+.stagger-in > * {
+  animation: enter-up var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: calc(var(--i, 0) * 55ms);
+}
+.stagger-in > .ant-card {
+  animation-name: glass-materialize;
+}
+
+/* 页面分区级联：按 DOM 位置依次浮现（70ms 起步错开顶栏）；
+   嵌套 .stagger-in 容器自管子项动效，跳过避免双重位移 */
+.section-stagger > *:not(.stagger-in) {
+  animation: enter-up var(--dur-slow) var(--ease-out-expo) both;
+  animation-delay: calc(70ms + var(--sn, 0) * 60ms);
+}
+.section-stagger > *:nth-child(1) { --sn: 0; }
+.section-stagger > *:nth-child(2) { --sn: 1; }
+.section-stagger > *:nth-child(3) { --sn: 2; }
+.section-stagger > *:nth-child(4) { --sn: 3; }
+.section-stagger > *:nth-child(5) { --sn: 4; }
+.section-stagger > *:nth-child(6) { --sn: 5; }
+.section-stagger > *:nth-child(n + 7) { --sn: 6; }
+.section-stagger > .ant-card {
+  animation-name: glass-materialize;
+}
+
+/* 指数板瓷砖：级联中的主角，逐片凝聚（板容器自身不参与分区动画） */
+.index-board.stagger-in > .index-tile {
+  animation-name: glass-materialize;
+  animation-duration: 520ms;
+  animation-delay: calc(90ms + var(--i, 0) * 45ms);
+}
+
+/* 页脚：内容落定后柔和浮现 */
+.app-footer {
+  animation: ambient-dawn var(--dur-slow) var(--ease-out-quart) 320ms both;
+}
+
+/* 卡片悬停抬升 */
+.hover-lift {
+  transition: transform var(--dur-base) var(--ease-out-quart),
+    box-shadow var(--dur-base) var(--ease-out-quart),
+    border-color var(--dur-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+  }
+}
+
+/* 品牌图标轻微放大 */
+.brand-mark {
+  transition: transform var(--dur-base) var(--ease-out-quart),
+    box-shadow var(--dur-base) var(--ease-out-quart);
+}
+@media (hover: hover) {
+  .brand-mark:hover {
+    transform: scale(1.06) rotate(-2deg);
+  }
+}
+
+/* 键盘焦点可见 */
+:focus-visible {
+  outline: 2px solid var(--up);
+  outline-offset: 2px;
+}
+
+/* Apple 响应原则：反馈落在按下瞬间（pointer-down 即时下沉） */
+.ant-btn:not(:disabled):active,
+a:active img {
+  transform: scale(0.97);
+}
+
+/* 文本选中 */
+::selection {
+  background: var(--accent-soft);
+}
+
+/* 尊重减少动效偏好：动画清零，交互用短片段的柔和淡入代替位移/弹性 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  /* 悬浮抬升在 reduce 下保持静止，仅保留颜色/透明度反馈 */
+  .glass-hover:hover,
+  .hover-lift:hover,
+  .brand-mark:hover {
+    transform: none !important;
+  }
+  /* 弹层/浮层改用柔和淡入（cross-fade），不倒换位移 */
+  .ant-modal-content,
+  .ant-popover-inner,
+  .ant-select-dropdown,
+  .ant-ant-alert {
+    transition-duration: 150ms !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* 减少透明偏好：玻璃换成更实的底，去掉模糊 */
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  :root[data-theme='light'] {
+    --card: rgba(255, 255, 255, 0.94);
+    --card-solid: #ffffff;
+    --border: rgba(28, 37, 50, 0.12);
+    --card-input: #ffffff;
+    --glass-track: rgba(28, 37, 50, 0.08);
+    --border-input: rgba(28, 37, 50, 0.18);
+  }
+  :root[data-theme='dark'] {
+    --card: rgba(24, 30, 44, 0.96);
+    --card-solid: #161c2a;
+    --border: rgba(236, 241, 248, 0.1);
+    --card-input: #1a2232;
+    --glass-track: rgba(255, 255, 255, 0.12);
+    --border-input: rgba(236, 241, 248, 0.18);
+  }
+  .glass,
+  .glass-tile,
+  .glass-panel,
+  .sticky-header,
+  .app-footer,
+  .ant-card,
+  .ant-card::before,
+  .glass-panel::before,
+  .ant-table-wrapper,
+  .ant-table,
+  .ant-input-affix-wrapper,
+  .ant-input-outlined,
+  .ant-select-selector,
+  .ant-btn-default,
+  .ant-btn-variant-outlined,
+  .ant-segmented,
+  .ant-tabs.ant-tabs-card > .ant-tabs-nav .ant-tabs-tab,
+  .ant-tabs.ant-tabs-card > .ant-tabs-nav .ant-tabs-nav-add,
+  .ant-tag:not(.ant-tag-has-color),
+  .ant-select-dropdown,
+  .ant-dropdown-menu,
+  .ant-popover-inner,
+  .ant-modal-content,
+  .ant-alert {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+  .ant-card::before,
+  .glass-panel::before {
+    display: none;
+  }
+}
